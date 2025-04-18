@@ -1,18 +1,17 @@
-const swaggerJsdoc = require("swagger-jsdoc");
+const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 
 const options = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "Mpesa-ETH Bridge API",
+      title: "ETH to M-Pesa Bridge API",
       version: "1.0.0",
-      description: "API to interact with the MpesaEthBridge smart contract",
     },
   },
-  apis: ["./index.js"], // Path to your API docs
+  apis: ["./routes/*.js"],
 };
 
-const specs = swaggerJsdoc(options);
+const swaggerSpec = swaggerJsDoc(options);
 
-module.exports = { swaggerUi, specs };
+module.exports = { swaggerUi, swaggerSpec };
