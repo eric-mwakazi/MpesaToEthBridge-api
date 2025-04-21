@@ -8,30 +8,24 @@ const options = {
     info: {
       title: "ETH to M-Pesa Bridge API",
       version: "1.0.0",
-      description: "API documentation for the ETH to M-Pesa Bridge",
     },
+    servers: [
+      {
+        url: "https://localhost:3000/api/",
+        // prod
+        url: "https://mpesa-to-eth-bridge-api.vercel.app/api/",
+      },
+    ],
   },
   apis: ["./routes/*.js"],
 };
 
-const generateSwaggerSpec = (req) => {
-  const host = req.get("host");
-  const protocol = req.protocol;
+const swaggerSpec = swaggerJsDoc(options);
 
-  return swaggerJsDoc({
-    ...options,
-    definition: {
-      ...options.definition,
-      servers: [
-        {
-          url: `${protocol}://${host}/api`,
-        },
-      ],
-    },
-  });
-};
-
+// 👇 Make sure both `swaggerUi` and `swaggerSpec` are exported
 module.exports = {
   swaggerUi,
-  generateSwaggerSpec,
+  swaggerSpec,
 };
+
+
