@@ -11,7 +11,7 @@ const options = {
     },
     servers: [
       {
-        url: "http://mpesa-to-eth-bridge-api.vercel.app/api/",
+        url: "https://localhost:3000/api/",
       },
     ],
   },
