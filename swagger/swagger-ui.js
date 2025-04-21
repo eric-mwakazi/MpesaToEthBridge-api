@@ -10,9 +10,9 @@ const options = {
     },
     servers: [
       {
-        url: "https://localhost:3000/api/",
-        // prod
-        url: "https://mpesa-to-eth-bridge-api.vercel.app/api/",
+        url: process.env.NODE_ENV === "production"
+          ? "https://mpesa-to-eth-bridge-api.vercel.app/api/"
+          : "http://localhost:3000/api/",
       },
     ],
   },
