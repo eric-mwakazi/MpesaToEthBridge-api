@@ -1,6 +1,6 @@
 require("dotenv").config();
 const { ethers } = require("ethers");
-const contractABI = require("./abi/MpesaEthBridge.json");
+const contractABI = require("../abi/MpesaEthBridge.json");
 
 const { ALCHEMY_RPC_SEPOLIA, WALLET_PRIVATE_KEY, CONTRACT_ADDRESS } = process.env;
 

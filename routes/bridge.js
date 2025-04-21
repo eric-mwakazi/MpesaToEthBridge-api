@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { contract } = require("../contractConfig");
+const { contract } = require("../configs/contractConfig");
 
 /**
  * @swagger
@@ -62,9 +62,56 @@ router.post("/send", async (req, res) => {
 router.get("/balance", async (req, res) => {
   try {
     const balance = await contract.getContractBalance();
-    res.json({ balance: balance.toString() + " ETH" });
+    // Convert BigInt (wei) to readable ETH
+    const balanceInEth = ethers.formatEther(balance);
+    res.json({ balance: `${balanceInEth} ETH` });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * @swagger
+ * /withdraw:
+ *   post:
+ *     summary: Withdraw ETH from the contract to admin wallet.
+ *     tags: [Bridge]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               amountInEth:
+ *                 type: number
+ *                 example: 0.01
+ *     responses:
+ *       200:
+ *         description: Withdrawal successful
+ */
+router.post("/withdraw", async (req, res) => {
+  try {
+    const { amountInEth } = req.body;
+
+    if (!amountInEth) {
+      return res.status(400).json({ error: "amountInEth is required" });
+    }
+
+    const amountInWei = ethers.parseEther(amountInEth.toString());
+
+    // Send ETH from contract to admin wallet
+    const tx = await contract.feesEarningWallet(); // get admin wallet from contract
+    const sendTx = await contract.signer.sendTransaction({
+      to: tx,
+      value: amountInWei,
+    });
+
+    await sendTx.wait();
+    res.json({ status: "withdrawal successful", txHash: sendTx.hash });
+  } catch (err) {
+    console.error("❌ Withdraw failed:", err);
+    res.status(500).json({ error: err.message || "Withdrawal failed" });
   }
 });
 
