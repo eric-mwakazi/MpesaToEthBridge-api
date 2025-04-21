@@ -24,18 +24,30 @@ const { contract } = require("../contractConfig");
  *       200:
  *         description: Transaction successful.
  */
+const { ethers } = require("ethers");
+
 router.post("/send", async (req, res) => {
   const { receiver, amountInEth } = req.body;
 
   try {
+    if (!receiver || !amountInEth) {
+      return res.status(400).json({ error: "receiver and amountInEth are required" });
+    }
+
+    // parseEther is directly on ethers in v6
     const amountInWei = ethers.parseEther(amountInEth.toString());
+
+    // Contract call
     const tx = await contract.sendEthWithFee(receiver, amountInWei);
     await tx.wait();
+
     res.json({ status: "success", txHash: tx.hash });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("❌ Transaction failed:", err);
+    res.status(500).json({ error: err.message || "Transaction failed" });
   }
 });
+
 
 /**
  * @swagger

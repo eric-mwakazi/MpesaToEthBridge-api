@@ -1,3 +1,4 @@
+// swagger.js
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 
@@ -8,10 +9,21 @@ const options = {
       title: "ETH to M-Pesa Bridge API",
       version: "1.0.0",
     },
+    servers: [
+      {
+        url: "http://localhost:3000/api/",
+      },
+    ],
   },
   apis: ["./routes/*.js"],
 };
 
 const swaggerSpec = swaggerJsDoc(options);
 
-module.exports = { swaggerUi, swaggerSpec };
+// 👇 Make sure both `swaggerUi` and `swaggerSpec` are exported
+module.exports = {
+  swaggerUi,
+  swaggerSpec,
+};
+
+
