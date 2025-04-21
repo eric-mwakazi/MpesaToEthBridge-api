@@ -1,6 +1,6 @@
 // swagger.js
-const swaggerJsDoc = require("swagger-jsdoc");
-const swaggerUi = require("swagger-ui-express");
+const swaggerUi = require('swagger-ui-express');
+const swaggerJsdoc = require('swagger-jsdoc');
 
 const options = {
   definition: {
@@ -9,21 +9,24 @@ const options = {
       title: "ETH to M-Pesa Bridge API",
       version: "1.0.0",
     },
-    servers: [
-      {
-        url: "https://localhost:3000/api/",
-      },
-    ],
   },
-  apis: ["./routes/*.js"],
+  apis: ["./routes/*.js"], // your route docs
 };
 
-const swaggerSpec = swaggerJsDoc(options);
+const swaggerSpec = swaggerJsdoc(options);
 
-// 👇 Make sure both `swaggerUi` and `swaggerSpec` are exported
-module.exports = {
-  swaggerUi,
-  swaggerSpec,
-};
+// Serve Swagger UI using CDN version (good for Vercel)
+const swaggerDocument = swaggerSpec;
 
+function swaggerDocs(app) {
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
+    customCssUrl: 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.18.3/swagger-ui.min.css',
+    customJs: [
+      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.18.3/swagger-ui-bundle.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.18.3/swagger-ui-standalone-preset.min.js'
+    ]
+  }));
+}
+
+module.exports = swaggerDocs;
 

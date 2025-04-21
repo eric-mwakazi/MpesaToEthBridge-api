@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const bridgeRoutes = require("./routes/bridge");
-const { swaggerUi, swaggerSpec } = require("./swagger/swagger-ui");
+const swaggerDocs = require("./swagger/swagger-ui");
 const cors = require('cors');
 const CSS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.1.0/swagger-ui.min.css';
 // Middleware
@@ -12,7 +12,7 @@ app.get('/', (req, res) => {
     res.redirect('/api-docs');
   });
 app.use("/api", bridgeRoutes);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, { customCssUrl: CSS_URL }))
+swaggerDocs(app);
 
 
 const PORT = process.env.PORT || 3000;
