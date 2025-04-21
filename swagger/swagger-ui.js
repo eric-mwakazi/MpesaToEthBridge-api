@@ -11,7 +11,7 @@ const options = {
     },
     servers: [
       {
-        url: "/",
+        url: "http://mpesa-to-eth-bridge-api.vercel.app/api/",
       },
     ],
   },
