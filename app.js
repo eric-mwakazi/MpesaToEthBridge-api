@@ -1,8 +1,9 @@
 const express = require("express");
 const app = express();
 const bridgeRoutes = require("./routes/bridge");
-const { swaggerUi, swaggerSpec } = require("./swagger/swagger-ui");
+const { swaggerSpec } = require("./swagger/swagger-ui");
 const cors = require('cors');
+const swaggerUi = require("swagger-ui-express");
 const CSS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.1.0/swagger-ui.min.css';
 // Middleware
 app.use(cors());

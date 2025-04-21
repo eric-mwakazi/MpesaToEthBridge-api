@@ -1,6 +1,5 @@
 // swagger.js
 const swaggerJsDoc = require("swagger-jsdoc");
-const swaggerUi = require("swagger-ui-express");
 
 const options = {
   definition: {
@@ -21,10 +20,7 @@ const options = {
 };
 
 const swaggerSpec = swaggerJsDoc(options);
-
-// 👇 Make sure both `swaggerUi` and `swaggerSpec` are exported
 module.exports = {
-  swaggerUi,
   swaggerSpec,
 };
 
