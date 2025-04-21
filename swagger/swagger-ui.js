@@ -1,4 +1,3 @@
-// swagger.js
 const swaggerJsDoc = require("swagger-jsdoc");
 
 const options = {
@@ -10,9 +9,10 @@ const options = {
     },
     servers: [
       {
-        url: process.env.NODE_ENV === "production"
-          ? "https://mpesa-to-eth-bridge-api.vercel.app/api/"
-          : "http://localhost:3000/api/",
+        url:
+          process.env.NODE_ENV === "production"
+            ? "https://mpesa-to-eth-bridge-api.vercel.app/api/"
+            : "http://localhost:3000/api/",
       },
     ],
   },
@@ -20,8 +20,7 @@ const options = {
 };
 
 const swaggerSpec = swaggerJsDoc(options);
+
 module.exports = {
   swaggerSpec,
 };
-
-
