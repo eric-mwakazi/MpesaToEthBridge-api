@@ -32,6 +32,6 @@ const generateSwaggerSpec = (req) => {
 };
 
 module.exports = {
-  swaggerUi,            // ✅ properly export swaggerUi
+  swaggerUi,
   generateSwaggerSpec,
 };
