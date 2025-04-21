@@ -1,19 +1,29 @@
 const express = require("express");
-const app = express();
+const cors = require("cors");
 const bridgeRoutes = require("./routes/bridge");
-const swaggerDocs = require("./swagger/swagger-ui");
-const cors = require('cors');
-const CSS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.1.0/swagger-ui.min.css';
-// Middleware
+
+const { swaggerUi, generateSwaggerSpec } = require("./swagger/swagger-ui");
+
+const app = express();
+
 app.use(cors());
 app.use(express.json());
-// Redirect the home page to /api-docs
-app.get('/', (req, res) => {
-    res.redirect('/api-docs');
-  });
+
+// Redirect home to Swagger
+app.get("/", (req, res) => {
+  res.redirect("/api-docs");
+});
+
 app.use("/api", bridgeRoutes);
-swaggerDocs(app);
 
+// ✅ Correct way to dynamically inject Swagger docs
+app.use("/api-docs", swaggerUi.serve, (req, res, next) => {
+  const swaggerSpec = generateSwaggerSpec(req);
+  swaggerUi.setup(swaggerSpec)(req, res, next);
+});
 
+// Start server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port localhost:${PORT}`));
+app.listen(PORT, () => {
+  console.log(`✅ Server running at http://localhost:${PORT}`);
+});
