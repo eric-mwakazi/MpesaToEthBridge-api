@@ -18,10 +18,10 @@ const run = async () => {
       {
         receiver: "0x000000000000000000000000000000000000dead",
         phone: "0700123456",
-        amount_kes: "100",
+        amount_kes: "1",
         amount_eth: "0.0001",
-        merchant_request_id: "TEST12345",
-        checkout_request_id: "CHECKOUT12345",
+        merchant_request_id: "TEST1234567",
+        checkout_request_id: "CHECKOUT1234567",
         status: "PENDING"
       }
     ]);

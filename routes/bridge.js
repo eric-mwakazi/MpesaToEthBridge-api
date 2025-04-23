@@ -180,8 +180,12 @@ router.post("/callback", async (req, res) => {
         return res.status(400).json({ error: "Incomplete metadata in callback" });
       }
 
-      const txHash = await processSuccessfulPayment(txn, amount, phone);
-      return res.status(200).json({ success: true, message: "Payment confirmed. ETH sent.", txHash });
+      const data = await processSuccessfulPayment(txn, amount, phone);
+      return res.status(200).json({
+        success: true,
+        message: `Payment confirmed. ${data.amount} ETH sent.`,
+        txHash: data.hash
+      });      
     }
 
     // Handle rejection or failure

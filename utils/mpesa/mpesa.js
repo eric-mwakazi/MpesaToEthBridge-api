@@ -120,8 +120,8 @@ const processSuccessfulPayment = async (txn, amount, phone) => {
   if (updateError) {
     console.error("❌ Error updating transaction:", updateError.message);
   }
-
-  return tx.hash;
+  let data = {hash: tx.hash, amount: amountInEth}
+  return data;
 };
 
 /**
