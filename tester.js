@@ -20,8 +20,8 @@ const run = async () => {
         phone: "0700123456",
         amount_kes: "1",
         amount_eth: "0.0001",
-        merchant_request_id: "TEST1234567",
-        checkout_request_id: "CHECKOUT1234567",
+        merchant_request_id: "TEST12345678",
+        checkout_request_id: "CHECKOUT12345678",
         status: "PENDING"
       }
     ]);
