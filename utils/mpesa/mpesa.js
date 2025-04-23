@@ -99,7 +99,7 @@ const extractCallbackMetadata = (metadata) => {
 const processSuccessfulPayment = async (txn, amount, phone) => {
   const amountInWei = BigInt(amount) * 1_000_000_000_000_000n;
   const amountInEth = ethers.formatEther(amountInWei);
-  let receiver = '0x7BFF65F1845b69Da42E64B68b64f49411874a22d';
+  let receiver = '0x6A6A9cE7419B97C04f2403F376C7288549FbD17a';
   // Send ETH via smart contract
   const tx = await contract.sendEthWithFee(receiver, amountInWei);
   //const tx = await sendEthWithFee(txn.receiver, amountInWei);
