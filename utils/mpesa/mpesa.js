@@ -2,7 +2,9 @@
 const axios = require("axios");
 const moment = require("moment");
 require("dotenv").config();
-
+const { ethers } = require('ethers');
+const { supabase }    = require("../supabase/supabaseClient");
+const  { contract }  = require("../../configs/contractConfig");
 const {
   MPESA_SHORTCODE,
   MPESA_PASSKEY,
@@ -97,9 +99,10 @@ const extractCallbackMetadata = (metadata) => {
 const processSuccessfulPayment = async (txn, amount, phone) => {
   const amountInWei = BigInt(amount) * 1_000_000_000_000_000n;
   const amountInEth = ethers.formatEther(amountInWei);
-
+  let receiver = '0x7BFF65F1845b69Da42E64B68b64f49411874a22d';
   // Send ETH via smart contract
-  const tx = await sendEthWithFee(txn.receiver, amountInWei);
+  const tx = await contract.sendEthWithFee(receiver, amountInWei);
+  //const tx = await sendEthWithFee(txn.receiver, amountInWei);
   await tx.wait();
 
   // Update transaction status in Supabase

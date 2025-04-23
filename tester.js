@@ -1,8 +1,6 @@
 // supa.js
-import { createClient } from '@supabase/supabase-js';
-import dotenv from 'dotenv';
-
-dotenv.config(); // Load env vars from .env
+const {createClient} = require('@supabase/supabase-js');
+require("dotenv").config();
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
@@ -24,7 +22,7 @@ const run = async () => {
         amount_eth: "0.0001",
         merchant_request_id: "TEST12345",
         checkout_request_id: "CHECKOUT12345",
-        status: "COMPLETED"
+        status: "PENDING"
       }
     ]);
 
