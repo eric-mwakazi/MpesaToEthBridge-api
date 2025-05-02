@@ -3,8 +3,9 @@ const axios = require("axios");
 const moment = require("moment");
 require("dotenv").config();
 const { ethers } = require('ethers');
-const { supabase }    = require("../supabase/supabaseClient");
-const  { contract }  = require("../../configs/contractConfig");
+const { supabase } = require("../supabase/supabaseClient");
+const { contract } = require("../../configs/contractConfig");
+
 const {
   MPESA_SHORTCODE,
   MPESA_PASSKEY,
@@ -14,9 +15,7 @@ const {
 } = process.env;
 
 const getAccessToken = async () => {
-  const auth =
-    "Basic " +
-    Buffer.from(`${MPESA_CONSUMER_KEY}:${MPESA_CONSUMER_SECRET}`).toString("base64");
+  const auth = "Basic " + Buffer.from(`${MPESA_CONSUMER_KEY}:${MPESA_CONSUMER_SECRET}`).toString("base64");
 
   const { data } = await axios.get(
     "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
@@ -27,13 +26,24 @@ const getAccessToken = async () => {
   return data.access_token;
 };
 
+function prepareNumber(phoneNumber) {
+  if (!/^2547\d{8}$/.test(phoneNumber)) {
+    if (/^0\d{9}$/.test(phoneNumber)) {
+      // Convert 07XXXXXXXX to 2547XXXXXXXX
+      phoneNumber = '254' + phoneNumber.slice(1);
+    } else {
+      throw new Error("Not a valid phone number format");
+    }
+  }
+  return phoneNumber;
+}
+
 const initiateSTKPush = async ({ phoneNumber, amount }) => {
   try {
     const accessToken = await getAccessToken();
     const timestamp = moment().format("YYYYMMDDHHmmss");
-    const password = Buffer.from(
-      `${MPESA_SHORTCODE}${MPESA_PASSKEY}${timestamp}`
-    ).toString("base64");
+    const formattedPhone = prepareNumber(phoneNumber);
+    const password = Buffer.from(`${MPESA_SHORTCODE}${MPESA_PASSKEY}${timestamp}`).toString("base64");
 
     const payload = {
       BusinessShortCode: MPESA_SHORTCODE,
@@ -41,9 +51,9 @@ const initiateSTKPush = async ({ phoneNumber, amount }) => {
       Timestamp: timestamp,
       TransactionType: "CustomerPayBillOnline",
       Amount: amount,
-      PartyA: phoneNumber,
+      PartyA: formattedPhone,
       PartyB: MPESA_SHORTCODE,
-      PhoneNumber: phoneNumber,
+      PhoneNumber: formattedPhone,
       CallBackURL: MPESA_CALLBACK_URL,
       AccountReference: "ETHMpesaBridge",
       TransactionDesc: "ETH to M-Pesa",
@@ -66,6 +76,7 @@ const initiateSTKPush = async ({ phoneNumber, amount }) => {
     return { success: false, error: err.message };
   }
 };
+
 
 /**
  * Fetch the transaction from the database by MerchantRequestID.
