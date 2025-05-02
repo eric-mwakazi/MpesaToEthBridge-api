@@ -38,7 +38,7 @@ const  { contract }  = require("../configs/contractConfig");
  *               phoneNumber:
  *                 type: string
  *                 description: Phone number to receive the M-Pesa STK push.
- *                 example: "254712345678"
+ *                 example: "0712345678"
  *     responses:
  *       200:
  *         description: ETH transfer successful and M-Pesa STK push initiated.
