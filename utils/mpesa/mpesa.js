@@ -4,7 +4,7 @@ const moment = require("moment");
 require("dotenv").config();
 const { ethers } = require('ethers');
 const { supabase } = require("../supabase/supabaseClient");
-const { contract } = require("../../configs/contractConfig");
+const {  preparePhoneNumber, getAccessToken} = require('./helpers');
 
 const {
   MPESA_SHORTCODE,
@@ -14,35 +14,16 @@ const {
   MPESA_CALLBACK_URL,
 } = process.env;
 
-const getAccessToken = async () => {
-  const auth = "Basic " + Buffer.from(`${MPESA_CONSUMER_KEY}:${MPESA_CONSUMER_SECRET}`).toString("base64");
 
-  const { data } = await axios.get(
-    "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
-    {
-      headers: { Authorization: auth },
-    }
-  );
-  return data.access_token;
-};
 
-function prepareNumber(phoneNumber) {
-  if (!/^2547\d{8}$/.test(phoneNumber)) {
-    if (/^0\d{9}$/.test(phoneNumber)) {
-      // Convert 07XXXXXXXX to 2547XXXXXXXX
-      phoneNumber = '254' + phoneNumber.slice(1);
-    } else {
-      throw new Error("Not a valid phone number format");
-    }
-  }
-  return phoneNumber;
-}
-
+/*
+Generate stk push from daraja api
+*/
 const initiateSTKPush = async ({ phoneNumber, amount }) => {
   try {
-    const accessToken = await getAccessToken();
+    const accessToken = await getAccessToken(MPESA_CONSUMER_KEY, MPESA_CONSUMER_SECRET );
     const timestamp = moment().format("YYYYMMDDHHmmss");
-    const formattedPhone = prepareNumber(phoneNumber);
+    const formattedPhone = preparePhoneNumber(phoneNumber);
     const password = Buffer.from(`${MPESA_SHORTCODE}${MPESA_PASSKEY}${timestamp}`).toString("base64");
 
     const payload = {
@@ -81,15 +62,15 @@ const initiateSTKPush = async ({ phoneNumber, amount }) => {
 /**
  * Fetch the transaction from the database by MerchantRequestID.
  */
-const getTransactionByMerchantId = async (merchantId) => {
+const getTransactionByMerchantId = async (CheckoutRequestID) => {
   const { data, error } = await supabase
     .from("transactions")
     .select("*")
-    .eq("merchant_request_id", merchantId)
+    .eq("checkout_request_id", CheckoutRequestID)
     .single();
 
   if (error || !data) {
-    console.warn("⚠️ Transaction not found for MerchantRequestID:", merchantId);
+    console.warn("⚠️ Transaction not found for MerchantRequestID:", CheckoutRequestID);
     return null;
   }
   return data;
@@ -124,7 +105,7 @@ const processSuccessfulPayment = async (txn, amount, phone) => {
       phone,
       tx_hash: tx.hash,
     })
-    .eq("merchant_request_id", txn.merchant_request_id);
+    .eq("checkout_request_id", txn.CheckoutRequestID);
 
   if (updateError) {
     console.error("❌ Error updating transaction:", updateError.message);
@@ -136,11 +117,11 @@ const processSuccessfulPayment = async (txn, amount, phone) => {
 /**
  * Reject the transaction in case of failure or user rejection.
  */
-const rejectTransaction = async (merchantId) => {
+const rejectTransaction = async (CheckoutRequestID) => {
   const { error } = await supabase
     .from("transactions")
     .update({ status: "REJECTED" })
-    .eq("merchant_request_id", merchantId);
+    .eq("checkout_request_id", CheckoutRequestID);
 
   if (error) {
     console.error("❌ Error rejecting transaction:", error.message);

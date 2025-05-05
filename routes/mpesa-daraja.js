@@ -12,7 +12,7 @@ const { ethers } = require('ethers');
 // Applicable with payhero
 const {
   initiateSTKPush,
-  getTransactionByCheckoutRequestID,
+  getTransactionByMerchantId,
   extractCallbackMetadata,
   processSuccessfulPayment,
   rejectTransaction
@@ -171,33 +171,26 @@ router.post("/send", async (req, res) => {
  */
 router.post("/callback", async (req, res) => {
   try {
-    const callback = req.body;
-    //console.log(callback)
+    const callback = req.body?.Body?.stkCallback;
     if (!callback) {
       return res.status(400).json({ error: "Invalid callback payload" });
     }
-    const callbackData = extractCallbackMetadata(callback.response);
-    //console.log('callbackData:', callbackData);
-    
-    const CheckoutRequestID = callbackData.checkoutRequestId;
-    //console.log("checkoutRequestId:", CheckoutRequestID);
-    
-    const resultCode = callbackData.resultCode;
 
-    const txn = await getTransactionByCheckoutRequestID(CheckoutRequestID);
+    const merchantId = callback.MerchantRequestID;
+    const resultCode = callback.ResultCode;
+
+    const txn = await getTransactionByMerchantId(merchantId);
     if (!txn) {
       return res.status(404).json({ error: "Transaction not found" });
     }
 
     if (resultCode === 0) {
-      const phone  = callbackData.phone;
-      const amount  = callbackData.amount;
-      const MpesaReceiptNumber = callbackData.MpesaReceiptNumber
+      const { phone, amount } = extractCallbackMetadata(callback.CallbackMetadata);
       if (!amount || !phone) {
         return res.status(400).json({ error: "Incomplete metadata in callback" });
       }
 
-      const data = await processSuccessfulPayment(txn, amount, phone, MpesaReceiptNumber);
+      const data = await processSuccessfulPayment(txn, amount, phone);
       return res.status(200).json({
         success: true,
         message: `Payment confirmed. ${data.amount} ETH sent.`,
@@ -206,7 +199,7 @@ router.post("/callback", async (req, res) => {
     }
 
     // Handle rejection or failure
-    await rejectTransaction(CheckoutRequestID);
+    await rejectTransaction(merchantId);
     return res.status(200).json({ success: false, message: "STK push rejected or failed." });
   } catch (err) {
     console.error("🚨 /callback error:", err);

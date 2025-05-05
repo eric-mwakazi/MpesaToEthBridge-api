@@ -7,6 +7,7 @@ const { swaggerSpec } = require("./swagger/swagger-ui");
 const swaggerUi = require("swagger-ui-express");
 const cors = require("cors");
 
+
 const CSS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.0.0/swagger-ui.min.css';
 
 app.use(cors());
@@ -28,6 +29,8 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
 }));
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port localhost:${PORT}`));
-
+const HOST = process.env.HOST || '0.0.0.0';
+app.listen(PORT, HOST, () => {
+  console.log(`🚀 Server running on http://${HOST}:${PORT}`);
+});
 module.exports = app;
