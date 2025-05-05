@@ -13,7 +13,7 @@ const options = {
           process.env.NODE_ENV === "production"
             ? "https://mpesa-to-eth-bridge-api.vercel.app/api/"
             //: "http://localhost:3000/api/",
-            : "hhttps://d868-102-210-25-18.ngrok-free.app/api"
+            : "https://d868-102-210-25-18.ngrok-free.app/api"
       },
     ],
   },
